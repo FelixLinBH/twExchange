@@ -1,7 +1,7 @@
 var Crawler = require("crawler");
 var url = require('url');
 
-
+var cathaybkJson = [];
 var c = new Crawler({
     maxConnections : 10,
     // This will be called for each crawled page
@@ -11,14 +11,14 @@ var c = new Crawler({
         }else{
             var $ = res.$;
             var array = [];
+            var tmp;
             $(".rate_list ul").children().children('dd').children().each(function (index) {
                 var $this = $(this);
-                $($this).each(function (index) {
-                    array.push($(this).text())
-                });
+                // console.log($(this).text());
+                array.push($(this).text());
+               
             });
-            console.log(array);
-           
+            
 
         }
         done();
