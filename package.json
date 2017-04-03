@@ -1,0 +1,8 @@
+{
+    "name": "twExchange",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+    	"crawler" : "1.0.3"
+  	}
+}
