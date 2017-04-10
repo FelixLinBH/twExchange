@@ -10,7 +10,28 @@ var functionExFormat = { cathaybk:cathayFormat};
 
 function cathayFormat(json) {
     // console.log("test");
-    console.log(json);
+    var newJson = {};
+    // console.log(json);
+    for (var prop in json) {
+      if (json.hasOwnProperty(prop)) {
+        
+        if (prop.includes("(USD)")) {
+            var obj = {};
+            obj['bkbuy'] = json[prop]['buy'];
+            obj['bksell'] = json[prop]['sell'];
+            newJson['USD'] = obj;
+        }
+        if (prop.includes("(USD Cash)")) {
+            var obj = (newJson['USD'] != undefined)?newJson['USD']:{};
+            obj['cashbuy'] = json[prop]['buy'];
+            obj['cashsell'] = json[prop]['sell'];
+            newJson['USD'] = obj;
+        }
+        console.log(json[prop])
+
+      }
+    }
+    console.log(newJson);
 }
 
 
