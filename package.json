@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-    	"crawler" : "1.0.3"
+    	"crawler" : "1.0.3",
+    	"moment" : "2.18.1"
   	}
 }

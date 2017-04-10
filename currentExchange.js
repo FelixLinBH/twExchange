@@ -1,6 +1,7 @@
-var Crawler = require("crawler");
+var Crawler = require('crawler');
 var url = require('url');
-
+var moment = require('moment');
+var ExFormat = require('./ExFormat.js');
 //國泰
 exports.cathaybk = function (completeBlock) {
     var cathaybkJson = [];
@@ -21,6 +22,7 @@ exports.cathaybk = function (completeBlock) {
                             cathaybkJson[tmpKey] = tmpValue;
                         }
                         tmpKey = ($this).text();
+                        tmpValue = {};
                     }else if (index % 5 == 2){
                         tmpValue.buy = ($this).text();
                     }else if (index % 5 == 4){
@@ -29,12 +31,16 @@ exports.cathaybk = function (completeBlock) {
 
                    
                 });
+                cathaybkJson['time'] = moment().format();
+                var exformat = new ExFormat("cathaybk",cathaybkJson);
+                exformat.exportJson();
                 completeBlock(cathaybkJson);
             }
             done();
         }
     });
     c.queue('https://www.cathaybk.com.tw/cathaybk/mobile/rate_01.asp');
+
 }
 //富邦
 exports.fubonbk = function (completeBlock) {
