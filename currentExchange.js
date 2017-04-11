@@ -33,8 +33,7 @@ exports.cathaybk = function (completeBlock) {
                 });
                 cathaybkJson['time'] = moment().format();
                 var exformat = new ExFormat("cathaybk",cathaybkJson);
-                exformat.exportJson();
-                completeBlock(cathaybkJson);
+                completeBlock(exformat.exportJson());
             }
             done();
         }
