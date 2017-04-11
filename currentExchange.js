@@ -75,7 +75,11 @@ exports.fubonbk = function (completeBlock) {
                    
                 });
                 fubonbkJson['time'] = updateTime;
-                completeBlock(fubonbkJson);
+
+                var exformat = new ExFormat("fubonbk",fubonbkJson);
+                completeBlock(exformat.exportJson());
+                
+                // completeBlock(fubonbkJson);
                 // console.log(updateTime);
                 // console.log(fubonbkJson);
             }

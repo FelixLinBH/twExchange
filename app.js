@@ -2,8 +2,9 @@ var test = require('./currentExchange.js');
 test.cathaybk(function (json) {
 	console.log(json);
 })
-// test.fubonbk(function (json) {
-	// console.log(json);})
+test.fubonbk(function (json) {
+	console.log(json);
+})
 // test.megabk(function (json) {
 // 	console.log(json);})
 // test.twbk(function (json) {
