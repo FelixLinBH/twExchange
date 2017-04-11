@@ -78,7 +78,7 @@ exports.fubonbk = function (completeBlock) {
 
                 var exformat = new ExFormat("fubonbk",fubonbkJson);
                 completeBlock(exformat.exportJson());
-                
+
                 // completeBlock(fubonbkJson);
                 // console.log(updateTime);
                 // console.log(fubonbkJson);
@@ -124,7 +124,9 @@ exports.megabk = function (completeBlock) {
                    
                 });
                 megabkJson['time'] = mupdateTime;
-                completeBlock(megabkJson);
+                var exformat = new ExFormat("megabk",megabkJson);
+                completeBlock(exformat.exportJson());
+                // completeBlock(megabkJson);
                 // console.log(mupdateTime);
                 // console.log(megabkJson);
             }

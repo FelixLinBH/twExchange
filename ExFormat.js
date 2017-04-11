@@ -6,7 +6,11 @@ function ExFormat (type,data) {
     self.init(type,data);
 }
 
-var functionExFormat = { cathaybk:cathayFormat,fubonbk:fubonFormat};
+var functionExFormat = { 
+    cathaybk:cathayFormat,
+    fubonbk:fubonFormat,
+    megabk:megabkFormat,
+                            };
 
 function cathayFormat(json) {
 
@@ -56,6 +60,33 @@ function fubonFormat(json) {
 
       }
     }
+    return newJson;
+}
+
+function megabkFormat(json) {
+    var newJson = {};
+    // console.log(json);
+    for (var prop in json) {
+      if (json.hasOwnProperty(prop)) {
+        var match = prop.match(/([a-zA-Z]+)/g);
+        if (match[0] != 'time') {
+            var obj = (newJson[match[0]] != undefined)?newJson[match[0]]:{};
+            if (!isNaN(json[prop]['bkbuy'])) {
+                obj['bkbuy'] = json[prop]['bkbuy'];
+                obj['bksell'] = json[prop]['bksell'];
+            }
+            if (!isNaN(json[prop]['cashbuy'])) {
+                obj['cashbuy'] = json[prop]['cashbuy'];
+                obj['cashsell'] = json[prop]['cashsell'];
+            }
+            newJson[match[0]] = obj;
+        }else{
+            newJson[match[0]] = json[prop];
+        }
+
+      }
+    }
+    // console.log(newJson);
     return newJson;
 }
 
