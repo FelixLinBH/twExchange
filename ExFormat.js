@@ -12,7 +12,58 @@ var functionExFormat = {
     megabk:normalFormat,
     twbk:normalFormat,
     chbbk:chbFormat,
+    esunbk:normalFormat,
+    hncbbk:hncbFormat,
+    feibbk:normalFormat,
+    sinopacbk:normalFormat,
+    entiebk:normalFormat,
+    scbk:normalFormat,
+    netbk:netbkFormat,
+    hsbcbk:normalFormat,
+    firstbk:firstbkFormat,
 };
+
+var mapping = {
+    '美金':'USD',
+    '美元':'USD',
+    '港幣':'HKD',
+    '英鎊':'GBP',
+    '紐西蘭幣':'NZD',
+    '紐幣':'NZD',
+    '澳幣':'AUD',
+    '新加坡幣':'SGD',
+    '瑞士法郎':'CHF',
+    '加幣':'CAD',
+    '日幣':'JPY',
+    '日圓':'JPY',
+    '日元':'JPY',
+    '瑞典幣':'SEK',
+    '南非幣':'ZAR',
+    '泰國銖':'THB',
+    '歐元':'EUR',
+    '人民幣':'CNY',
+    '韓元':'KRW',
+}
+
+var engmapping = {
+    'U.S. Dollar(USD)':'USD',
+    'British Pound(GBP)':'GBP',
+    'Hong Kong Dollar(HKD)':'HKD',
+    'Australian Dollar(AUD)':'AUD',
+    'Singapore Dollar(SGD)':'SDG',
+    'Confederation Helvetica Franc(CHF)':'CHF',
+    'Canadian Dollar(CAD)':'CAD',
+    'Japanese Yen (JPY)':'JPY',
+    'South African Rand(ZAR)':'ZAR',
+    'Swedish Krona(SEK)':'SEK',
+    'Thailand Baht(THB)':'THB',
+    'New Zealand Dollar(NZD)':'NZD',
+    'Euro(EUR)':'EUR',
+    'Turkish Lira(TRY)':'TRY',
+    'large amounts of US Dollars (USD)':'USD-L',
+    'CNY':'CNY'
+}
+
 function cathayFormat(json) {
 
     var newJson = {};
@@ -112,6 +163,62 @@ function chbFormat(json) {
     return newJson;
 }
 
+function hncbFormat(json) {
+    var newJson = {};
+    for (var prop in json) {
+      if (json.hasOwnProperty(prop)) {
+        if (prop.match(/([0-9]+)/g)) {
+            continue;
+        }
+        var searchKey = prop.replace("現鈔", "");
+        var key = mapping[searchKey];
+        var data = json[prop];
+        if (prop != 'time') {
+            var obj = (newJson[key] != undefined)?newJson[key]:{};
+            if (prop.match(/(現鈔)/)) {
+                obj['cashbuy'] = data['buy'];
+                obj['cashsell'] = data['sell'];
+            }else{
+                obj['bkbuy'] = data['buy'];
+                obj['bksell'] = data['sell'];
+            }
+            newJson[key] = obj;
+        }else{
+            newJson['time'] = data[0];
+        }
+
+      }
+    }
+    return newJson;
+}
+
+function netbkFormat(json) {
+    var newJson = {};
+    for (var prop in json) {
+        if (prop != 'time') {
+            newJson[mapping[prop]] = json[prop];
+        }else{
+            newJson['time'] = json[prop];
+        }
+    }
+    return newJson;
+}
+
+function firstbkFormat(json) {
+    var newJson = {};
+    for (var prop in json) {
+        if (prop != 'time') {
+            newJson[engmapping[prop]] = json[prop];
+        }else{
+            newJson['time'] = json[prop];
+        }
+    }
+    return newJson;
+}
+
+
+
+//Common function
 function fullToHalf(val) {
   var value = val || "";
   var result = "";

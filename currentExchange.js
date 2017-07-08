@@ -2,6 +2,7 @@ var Crawler = require('crawler');
 var url = require('url');
 var moment = require('moment');
 var ExFormat = require('./ExFormat.js');
+var iconv = require('iconv-lite');
 //國泰
 exports.cathaybk = function (completeBlock) {
     var cathaybkJson = [];
@@ -258,7 +259,9 @@ exports.esunbk = function (completeBlock) {
 
                 chbUpdateTime = $('#LbQuoteTime').text();
                 esunbkJson['time'] = chbUpdateTime;
-                completeBlock(esunbkJson);
+                var exformat = new ExFormat("esunbk",esunbkJson);
+                completeBlock(exformat.exportJson());
+                // completeBlock(esunbkJson);
                 // console.log(esunbkJson);
                 // console.log(chbUpdateTime);
             }
@@ -308,14 +311,18 @@ exports.taishinbk = function (completeBlock) {
 
     taishin.queue('https://www.taishinbank.com.tw/TS/TS06/TS0605/TS060502/index.htm?urlPath1=TS02&urlPath2=TS0202');
 }
-//華南
+//華南 
 exports.hncbbk = function (completeBlock) {
     var hncbbkJson = [];
     var hncbUpdateTime;
     var hncb = new Crawler({
         maxConnections : 10,
+       
         // This will be called for each crawled page
         callback : function (error, res, done) {
+            var decodeBody = iconv.decode(new Buffer(res.body), "big5"); 
+            res.body = iconv.encode(decodeBody, 'utf8');
+
             if(error){
                 console.log(error);
             }else{
@@ -323,11 +330,12 @@ exports.hncbbk = function (completeBlock) {
                 var tmpKey;
                 var tmpValue = {};
                 $('.formtable_infotext12gy').each(function (index) {
-                    // console.log($(this).text());
                     if (index >= 1) {       
                         var result = $(this).text().trim().split("       ");
                         var priceObj = {};
-                        var key = result[0].trim();                  
+                        var key = result[0].trim(); 
+
+
                         priceObj.buy = result[1].trim();
                         priceObj.sell = result[2].trim();
                         hncbbkJson[key] = priceObj;
@@ -337,9 +345,9 @@ exports.hncbbk = function (completeBlock) {
                 
                 hncbUpdateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
                 hncbbkJson['time'] = hncbUpdateTime;
-                completeBlock(hncbbkJson);
-                // console.log(hncbbkJson);
-                // console.log(hncbUpdateTime);
+                var exformat = new ExFormat("hncbbk",hncbbkJson);
+                completeBlock(exformat.exportJson());
+                
             }
             done();
         }
@@ -460,7 +468,10 @@ exports.feibbk = function (completeBlock) {
                     }   
                              
                 });
-                completeBlock(feibbkJson);
+                var exformat = new ExFormat("feibbk",feibbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(feibbkJson);
                 // console.log(feibbkJson);
             }
             done();
@@ -512,7 +523,11 @@ exports.sinopacbk = function (completeBlock) {
                 var time = $('table').text();
                 sinopacUpdateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
                 sinopacbkJson['time'] = sinopacUpdateTime;
-                completeBlock(sinopacbkJson);
+
+                var exformat = new ExFormat("sinopacbk",sinopacbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(sinopacbkJson);
                 // console.log(sinopacUpdateTime);
                 // console.log(sinopacbkJson);
             }
@@ -636,8 +651,12 @@ exports.entiebk = function (completeBlock) {
                
                 var time = $("table[summary='更新日期時間']").text().trim();
                 entieUpdateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-                entiebkJson['time'] = entiebkJson;
-                completeBlock(entiebkJson);
+                entiebkJson['time'] = entieUpdateTime;
+                var exformat = new ExFormat("entiebk",entiebkJson);
+                completeBlock(exformat.exportJson());
+
+
+                // completeBlock(entiebkJson);
                 // console.log(entieUpdateTime);
                 // console.log(entiebkJson);
             }
@@ -675,7 +694,9 @@ exports.scbk = function (completeBlock) {
                 var time = $("body").text().trim();
                 scUpdateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
                 scbkJson['time'] = scUpdateTime;
-                completeBlock(scbkJson);
+                var exformat = new ExFormat("scbk",scbkJson);
+                completeBlock(exformat.exportJson());
+                // completeBlock(scbkJson);
                 // console.log(scUpdateTime);
                 // console.log(scbkJson);
             }
@@ -802,7 +823,11 @@ exports.netbk = function (completeBlock) {
                     tcbUpdateTime = timeDate + " AM " + timeTime;
                 }
                 netbkJson['time'] = tcbUpdateTime;
-                completeBlock(netbkJson);
+
+                var exformat = new ExFormat("netbk",netbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(netbkJson);
                 // console.log(tcbUpdateTime);
                 // console.log(netbkJson);
             }
@@ -841,7 +866,10 @@ exports.hsbcbk = function (completeBlock) {
                 var time = $(".ForTime01").text().trim();
                 hsbcUpdateTime = time.match(/(\d+)(-|\/)(\d+)(-|\/)(\d+)/g);
                 hsbcbkJson['time'] = hsbcUpdateTime;
-                completeBlock(hsbcbkJson);
+                var exformat = new ExFormat("hsbcbk",hsbcbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(hsbcbkJson);
                 // console.log(hsbcUpdateTime);
                 // console.log(hsbcbkJson);
             }
@@ -888,7 +916,10 @@ exports.firstbk = function (completeBlock) {
                 var time = $(".locator2").text().trim();
                 firstUpdateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
                 firstbkJson['time'] = firstUpdateTime;
-                completeBlock(firstbkJson);
+                var exformat = new ExFormat("firstbk",firstbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(firstbkJson);
                 // console.log(firstUpdateTime);
                 // console.log(firstbkJson);
             }

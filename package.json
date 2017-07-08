@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
     	"crawler" : "1.0.3",
-    	"moment" : "2.18.1"
+    	"moment" : "2.18.1",
+    	"iconv-lite" : "0.4.18"
   	}
 }
