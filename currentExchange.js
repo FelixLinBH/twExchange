@@ -164,7 +164,10 @@ exports.twbk = function (completeBlock) {
                 });
                 twupdateTime = $('.time').text();
                 twbkJson['time'] = twupdateTime;
-                completeBlock(twbkJson);
+                var exformat = new ExFormat("twbk",twbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(twbkJson);
                 // console.log(twupdateTime);
                 // console.log(twbkJson);
             }

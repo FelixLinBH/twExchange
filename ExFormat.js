@@ -9,7 +9,8 @@ function ExFormat (type,data) {
 var functionExFormat = { 
     cathaybk:cathayFormat,
     fubonbk:fubonFormat,
-    megabk:megabkFormat,
+    megabk:normalFormat,
+    twbk:normalFormat,
                             };
 
 function cathayFormat(json) {
@@ -63,7 +64,7 @@ function fubonFormat(json) {
     return newJson;
 }
 
-function megabkFormat(json) {
+function normalFormat(json) {
     var newJson = {};
     // console.log(json);
     for (var prop in json) {
