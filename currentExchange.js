@@ -214,7 +214,11 @@ exports.chbbk = function (completeBlock) {
                 var time = chbUpdateTime.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
                 chbUpdateTime = time;
                 chbbkJson['time'] = chbUpdateTime;
-                completeBlock(chbbkJson);
+
+                var exformat = new ExFormat("chbbk",chbbkJson);
+                completeBlock(exformat.exportJson());
+
+                // completeBlock(chbbkJson);
                 // console.log(chbbkJson);
                 // console.log(chbUpdateTime);
             }

@@ -6,17 +6,16 @@ function ExFormat (type,data) {
     self.init(type,data);
 }
 
-var functionExFormat = { 
+var functionExFormat = {
     cathaybk:cathayFormat,
     fubonbk:fubonFormat,
     megabk:normalFormat,
     twbk:normalFormat,
-                            };
-
+    chbbk:chbFormat,
+};
 function cathayFormat(json) {
 
     var newJson = {};
-    
     for (var prop in json) {
       if (json.hasOwnProperty(prop)) {
         var match = prop.match(/([a-zA-Z]+)/g);
@@ -36,13 +35,11 @@ function cathayFormat(json) {
 
       }
     }
-    // console.log(newJson);
     return newJson;
 }
 
 function fubonFormat(json) {
     var newJson = {};
-    // console.log(json);
     for (var prop in json) {
       if (json.hasOwnProperty(prop)) {
         var match = prop.match(/([a-zA-Z]+)/g);
@@ -66,7 +63,6 @@ function fubonFormat(json) {
 
 function normalFormat(json) {
     var newJson = {};
-    // console.log(json);
     for (var prop in json) {
       if (json.hasOwnProperty(prop)) {
         var match = prop.match(/([a-zA-Z]+)/g);
@@ -87,8 +83,52 @@ function normalFormat(json) {
 
       }
     }
-    // console.log(newJson);
     return newJson;
+}
+
+function chbFormat(json) {
+    var newJson = {};
+    for (var prop in json) {
+      if (json.hasOwnProperty(prop)) {
+        var data = json[prop];
+        prop = fullToHalf(prop);
+        var match = prop.match(/([a-zA-Z]+)/g);
+        if (match[0] != 'time') {
+            var obj = (newJson[match[0]] != undefined)?newJson[match[0]]:{};
+            if (prop.match(/(-C)/)) {
+                obj['cashbuy'] = data['buy'];
+                obj['cashsell'] = data['sell'];
+            }else{
+                obj['bkbuy'] = data['buy'];
+                obj['bksell'] = data['sell'];
+            }
+            newJson[match[0]] = obj;
+        }else{
+            newJson['time'] = data[0];
+        }
+
+      }
+    }
+    return newJson;
+}
+
+function fullToHalf(val) {
+  var value = val || "";
+  var result = "";
+  if (value) {
+    for (var i = 0; i <= value.length; i++) {
+      if (value.charCodeAt(i) == 12288) {
+        result += " ";
+      } else {
+        if (value.charCodeAt(i) > 65280 && value.charCodeAt(i) < 65375) {
+          result += String.fromCharCode(value.charCodeAt(i) - 65248);
+        } else {
+          result += String.fromCharCode(value.charCodeAt(i));
+        }
+      }
+    }
+  } 
+  return result;
 }
 
 ExFormat.prototype.init = function init (type,data) {
