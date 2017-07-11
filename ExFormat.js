@@ -21,12 +21,15 @@ var functionExFormat = {
     netbk:netbkFormat,
     hsbcbk:normalFormat,
     firstbk:firstbkFormat,
+    scsbbk:scsbbkFormat
 };
 
 var mapping = {
     '美金':'USD',
+    '美金現金':'USD',
     '美元':'USD',
     '港幣':'HKD',
+    '港幣現金':'HKD',
     '英鎊':'GBP',
     '紐西蘭幣':'NZD',
     '紐幣':'NZD',
@@ -37,12 +40,22 @@ var mapping = {
     '日幣':'JPY',
     '日圓':'JPY',
     '日元':'JPY',
+    '日幣現金':'JPY',
     '瑞典幣':'SEK',
     '南非幣':'ZAR',
     '泰國銖':'THB',
     '歐元':'EUR',
+    '歐元現金':'EUR',
     '人民幣':'CNY',
     '韓元':'KRW',
+    '加拿大幣':'CAD',
+    '丹麥幣':'DDK',
+    '泰銖':'THB',
+    '美金小額':'USD',
+    '美金大額':'USD-L',
+    '離岸人民幣':'CNY',
+    '在岸人民幣':'CNY-IN',
+    '人民幣現鈔':'CNY'
 }
 
 var engmapping = {
@@ -216,6 +229,28 @@ function firstbkFormat(json) {
     return newJson;
 }
 
+function scsbbkFormat(json) {
+    var newJson = {};
+    for (var prop in json) {
+        if (prop == 'time') {
+            newJson['time'] = json[prop];
+        }else{
+            var searchKey = prop.replace(/　/g, "");
+            var key = mapping[searchKey];
+            var obj = (newJson[key] != undefined)?newJson[key]:{};
+            var data = json[prop];
+            if (searchKey.match(/(現金)/) || searchKey.match(/(現鈔)/)) {
+                obj['cashbuy'] = data['buy'];
+                obj['cashsell'] = data['sell'];
+            }else{
+                obj['bkbuy'] = data['buy'];
+                obj['bksell'] = data['sell'];
+            }
+            newJson[key] = obj;
+        }
+    }
+    return newJson;
+}
 
 
 //Common function

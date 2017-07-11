@@ -737,7 +737,8 @@ exports.scsbbk = function (completeBlock) {
                 var timeTime = time.match(/(\d+)(-|\:)(\d+)(-|\:)(\d+)/g);
                 scsbUpdateTime = timeDate[0] + " " + timeTime[0];
                 scsbbkJson['time'] = scsbUpdateTime;
-                completeBlock(scsbbkJson);
+                var exformat = new ExFormat("scsbbk",scsbbkJson);
+                completeBlock(exformat.exportJson());
                 // console.log(scsbUpdateTime);
                 // console.log(scsbbkJson);
             }
