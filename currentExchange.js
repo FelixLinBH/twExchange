@@ -1,8 +1,8 @@
 var Crawler = require('crawler');
 var url = require('url');
 var moment = require('moment');
-var ExFormat = require('./ExFormat.js');
 var iconv = require('iconv-lite');
+var Runner = require('./Runner.js');
 //國泰
 exports.cathaybk = function (completeBlock) {
     var cathaybkJson = [];
@@ -13,28 +13,8 @@ exports.cathaybk = function (completeBlock) {
             if(error){
                 console.log(error);
             }else{
-                var $ = res.$;
-                var tmpKey;
-                var tmpValue = {};
-                $(".rate_list ul").children().children('dd').children().each(function (index) {
-                    var $this = $(this);
-                    if (index % 5 == 0) {
-                        if (tmpKey != undefined) {
-                            cathaybkJson[tmpKey] = tmpValue;
-                        }
-                        tmpKey = ($this).text();
-                        tmpValue = {};
-                    }else if (index % 5 == 2){
-                        tmpValue.buy = ($this).text();
-                    }else if (index % 5 == 4){
-                        tmpValue.sell = ($this).text();
-                    } 
-
-                   
-                });
-                cathaybkJson['time'] = moment().format();
-                var exformat = new ExFormat("cathaybk",cathaybkJson);
-                completeBlock(exformat.exportJson());
+                var runner = new Runner("cathaybk",res.$);
+                completeBlock(runner.exportJson());
             }
             done();
         }
@@ -53,36 +33,16 @@ exports.fubonbk = function (completeBlock) {
             if(error){
                 console.log(error);
             }else{
-                var $ = res.$;
-                var tmpKey;
-                var tmpValue = {};
-                $('table tr').each(function (index) {
-                    if (index == 0) {
-                        var timeString = $(this).text().trim();
-                        var time = timeString.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-                        updateTime = time;
-                    }
-                    if (index >= 3 && index < 17) {
-                        
-                        var result = $(this).text().trim().split("\n");
-                        var priceObj = {};
-                        priceObj.bkbuy = result[1];
-                        priceObj.bksell = result[2];
-                        priceObj.cashbuy = result[3];
-                        priceObj.cashsell = result[4];
-                        
-                        fubonbkJson[result[0]] = priceObj;
-                    } 
-                   
-                });
-                fubonbkJson['time'] = updateTime;
+                // var pattern = new Pattern("fubonbk",res.$);
+                // fubonbkJson = pattern.exportJson();
+     
 
-                var exformat = new ExFormat("fubonbk",fubonbkJson);
-                completeBlock(exformat.exportJson());
+                // var exformat = new ExFormat("fubonbk",fubonbkJson);
+                // completeBlock(exformat.exportJson());
 
-                // completeBlock(fubonbkJson);
-                // console.log(updateTime);
-                // console.log(fubonbkJson);
+                var runner = new Runner("fubonbk",res.$);
+                completeBlock(runner.exportJson());
+                
             }
             done();
         }
