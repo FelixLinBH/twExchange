@@ -4,8 +4,13 @@ var moment = require('moment');
 var iconv = require('iconv-lite');
 var Runner = require('./Runner.js');
 //國泰
+var bankMappingWebsite = {
+    "cathaybk":"https://www.cathaybk.com.tw/cathaybk/mobile/rate_01.asp",
+    "fubonbk":"https://ebank.taipeifubon.com.tw/B2C/cfhqu/cfhqu009/CFHQU009_Home.faces"
+}
+
 exports.cathaybk = function (completeBlock) {
-    var cathaybkJson = [];
+    console.log( arguments.callee.toString());
     var c = new Crawler({
         maxConnections : 10,
         // This will be called for each crawled page
@@ -33,16 +38,9 @@ exports.fubonbk = function (completeBlock) {
             if(error){
                 console.log(error);
             }else{
-                // var pattern = new Pattern("fubonbk",res.$);
-                // fubonbkJson = pattern.exportJson();
-     
-
-                // var exformat = new ExFormat("fubonbk",fubonbkJson);
-                // completeBlock(exformat.exportJson());
-
                 var runner = new Runner("fubonbk",res.$);
                 completeBlock(runner.exportJson());
-                
+
             }
             done();
         }
