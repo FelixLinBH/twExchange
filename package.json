@@ -1,10 +1,29 @@
 {
-    "name": "twExchange",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-    	"crawler" : "1.0.3",
-    	"moment" : "2.18.1",
-    	"iconv-lite" : "0.4.18"
-  	}
+  "name": "tw-exchange",
+  "version": "1.0.0",
+  "description": "Taiwan bank exchange rate.",
+  "main": "lib/currentExchange.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FelixLinBH/twExchange.git"
+  },
+  "keywords": [
+    "taiwan",
+    "exchange",
+    "rate"
+  ],
+  "author": "FelixLin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FelixLinBH/twExchange/issues"
+  },
+  "dependencies": {
+    "crawler" : "1.0.3",
+    "moment" : "2.18.1",
+    "iconv-lite" : "0.4.18"
+  },
+  "homepage": "https://github.com/FelixLinBH/twExchange#readme"
 }

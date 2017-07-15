@@ -1,4 +1,4 @@
-var currentEx = require('./currentExchange.js');
+var currentEx = require('./lib/currentExchange.js');
 
 currentEx.getCurrentExChange("cathaybk",function(json){
 	console.log("cathaybk=>" + JSON.stringify(json));
