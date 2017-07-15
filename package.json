@@ -1,6 +1,6 @@
 {
   "name": "tw-exchange",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Taiwan bank exchange rate.",
   "main": "lib/currentExchange.js",
   "scripts": {

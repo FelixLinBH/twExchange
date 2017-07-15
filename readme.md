@@ -2,6 +2,8 @@
 
 >Get the current exchange rate from each taiwan bank. 
 
+[![NPM](https://nodei.co/npm/tw-exchange.png?downloads&downloadRank)](https://nodei.co/npm/tw-exchange/)
+
 ## Install
 
 If you haven't already got Node.js, then [go get it](http://nodejs.org/).
@@ -70,5 +72,5 @@ cathay bank rate => {"USD":{"bkbuy":"30.3100","bksell":"30.5100","cashbuy":"30.1
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
 
