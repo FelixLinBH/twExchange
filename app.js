@@ -1,12 +1,16 @@
 var test = require('./currentExchange.js');
+
+test.getCurrentExChange("fubonbk",function(json){
+	console.log(json);
+})
 // test.cathaybk(function (json) {
-	// console.log(json);
+// 	console.log(json);
 // })
 // test.fubonbk(function (json) {
 // 	console.log(json);
 // })
-test.megabk(function (json) {
-	console.log(json);})
+// test.megabk(function (json) {
+// 	console.log(json);})
 // test.twbk(function (json) {
 // 	console.log(json);})
 // test.chbbk(function (json) {

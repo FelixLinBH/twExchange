@@ -9,8 +9,7 @@ var bankMappingWebsite = {
     "fubonbk":"https://ebank.taipeifubon.com.tw/B2C/cfhqu/cfhqu009/CFHQU009_Home.faces"
 }
 
-exports.cathaybk = function (completeBlock) {
-    console.log( arguments.callee.toString());
+exports.getCurrentExChange = function(bank,completeBlock) {
     var c = new Crawler({
         maxConnections : 10,
         // This will be called for each crawled page
@@ -18,15 +17,15 @@ exports.cathaybk = function (completeBlock) {
             if(error){
                 console.log(error);
             }else{
-                var runner = new Runner("cathaybk",res.$);
+                var runner = new Runner(bank,res.$);
                 completeBlock(runner.exportJson());
             }
             done();
         }
     });
-    c.queue('https://www.cathaybk.com.tw/cathaybk/mobile/rate_01.asp');
-
+    c.queue(bankMappingWebsite[bank]);
 }
+
 //富邦
 exports.fubonbk = function (completeBlock) {
     var fubonbkJson = [];
