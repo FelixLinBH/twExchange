@@ -21,7 +21,8 @@ var functionExFormat = {
     netbk:netbkFormat,
     hsbcbk:normalFormat,
     firstbk:firstbkFormat,
-    scsbbk:scsbbkFormat
+    scsbbk:scsbbkFormat,
+    taishinbk:normalFormat
 };
 
 var mapping = {
@@ -209,6 +210,9 @@ function netbkFormat(json) {
     var newJson = {};
     for (var prop in json) {
         if (prop != 'time') {
+            if (mapping[prop] === undefined) {
+                continue;
+            }
             newJson[mapping[prop]] = json[prop];
         }else{
             newJson['time'] = json[prop];
@@ -221,6 +225,9 @@ function firstbkFormat(json) {
     var newJson = {};
     for (var prop in json) {
         if (prop != 'time') {
+            if (engmapping[prop] === undefined) {
+                continue;
+            }
             newJson[engmapping[prop]] = json[prop];
         }else{
             newJson['time'] = json[prop];
@@ -236,7 +243,11 @@ function scsbbkFormat(json) {
             newJson['time'] = json[prop];
         }else{
             var searchKey = prop.replace(/　/g, "");
+
             var key = mapping[searchKey];
+            if (key === undefined) {
+                continue;
+            }
             var obj = (newJson[key] != undefined)?newJson[key]:{};
             var data = json[prop];
             if (searchKey.match(/(現金)/) || searchKey.match(/(現鈔)/)) {

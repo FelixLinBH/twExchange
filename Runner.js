@@ -11,7 +11,12 @@ function Runner (type,data) {
 
 function run(type,body) {    
     var pattern = new Pattern(type,body);
-    var exformat = new ExFormat(type,pattern.exportJson());
+    try{
+        var exformat = new ExFormat(type,pattern.exportJson());
+    }catch (err){
+        return pattern.exportJson();
+    }
+    
     return exformat.exportJson();
 }
 
