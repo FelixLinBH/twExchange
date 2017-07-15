@@ -22,7 +22,12 @@ var functionExFormat = {
     hsbcbk:normalFormat,
     firstbk:firstbkFormat,
     scsbbk:scsbbkFormat,
-    taishinbk:normalFormat
+    taishinbk:normalFormat,
+    tcbk:normalFormat,
+    dbsbk:normalFormat,
+    ctbcbk:normalFormat,
+    kgibk:normalFormat,
+    tcbbk:normalFormat,
 };
 
 var mapping = {
@@ -79,7 +84,6 @@ var engmapping = {
 }
 
 function cathayFormat(json) {
-
     var newJson = {};
     for (var prop in json) {
       if (json.hasOwnProperty(prop)) {

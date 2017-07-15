@@ -1,4 +1,3 @@
-
 var Crawler = require('crawler');
 var url = require('url');
 var moment = require('moment');
@@ -32,7 +31,6 @@ var bankMappingWebsite = {
 exports.getCurrentExChange = function(bank,completeBlock) {
     var c = new Crawler({
         maxConnections : 10,
-        // This will be called for each crawled page
         callback : function (error, res, done) {
             if(error){
                 console.log(error);

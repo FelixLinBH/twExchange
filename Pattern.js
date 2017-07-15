@@ -32,38 +32,39 @@ var functionPattern = {
     firstbk:firstbkPattern,
 };
 
-var resultJson = [];
-var tmpKey;
-var tmpValue = {};
-var updateTime;
+// var resultJson = [];
+// var tmpKey;
+// var tmpValue = {};
+// var updateTime;
 
-function cathayPattern($) {    
+function cathayPattern($,instance) {   
+
     $(".rate_list ul").children().children('dd').children().each(function (index) {
         var $this = $(this);
         if (index % 5 == 0) {
-            if (tmpKey != undefined) {
-                resultJson[tmpKey] = tmpValue;
+            if (instance.tmpKey != undefined && instance.tmpKey != "") {
+                instance.resultJson[instance.tmpKey] = instance.tmpValue;
             }
-            tmpKey = ($this).text();
-            tmpValue = {};
+            instance.tmpKey = ($this).text();
+            instance.tmpValue = {};
         }else if (index % 5 == 2){
-            tmpValue.buy = ($this).text();
+            instance.tmpValue.buy = ($this).text();
         }else if (index % 5 == 4){
-            tmpValue.sell = ($this).text();
+            instance.tmpValue.sell = ($this).text();
         } 
 
        
     });
-    resultJson['time'] = moment().format();
-    return resultJson;
+    instance.resultJson['time'] = moment().format();
+    return instance.resultJson;
 }
 
-function fubonPattern($) {
+function fubonPattern($,instance) {
     $('table tr').each(function (index) {
         if (index == 0) {
             var timeString = $(this).text().trim();
             var time = timeString.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-            updateTime = time;
+            instance.updateTime = time;
         }
         if (index >= 3 && index < 17) {
             
@@ -74,20 +75,20 @@ function fubonPattern($) {
             priceObj.cashbuy = result[3];
             priceObj.cashsell = result[4];
             
-            resultJson[result[0]] = priceObj;
+            instance.resultJson[result[0]] = priceObj;
         } 
        
     });
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function megabkPattern($) {
+function megabkPattern($,instance) {
     $('tbody tr').each(function (index) {
         if (index == 0) {
             var timeString = $(this).text().trim().split("\n");
             var time = timeString[1] + " " + timeString[3];
-            updateTime = time;
+            instance.updateTime = time;
         }
         if (index >= 1) {
             
@@ -98,15 +99,15 @@ function megabkPattern($) {
             priceObj.cashbuy = result[2];
             priceObj.cashsell = result[4];
             
-            resultJson[result[0]] = priceObj;
+            instance.resultJson[result[0]] = priceObj;
         } 
        
     });
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function twbkPattern($){
+function twbkPattern($,instance){
     $('tbody tr').each(function (index) {
          var result = $(this).text().trim().split("\n");
          var priceObj = {};
@@ -115,16 +116,16 @@ function twbkPattern($){
         priceObj.bksell = result[10].trim();
         priceObj.cashbuy = result[7].trim();
         priceObj.cashsell = result[8].trim();
-        resultJson[key] = priceObj;
+        instance.resultJson[key] = priceObj;
 
        
     });
-    updateTime = $('.time').text();
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = $('.time').text();
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function chbbkPattern($){
+function chbbkPattern($,instance){
     $('tbody tr').each(function (index) {
         if (index >= 1) {   
             var result = $(this).text().trim().split("\n");
@@ -132,18 +133,18 @@ function chbbkPattern($){
             var key = result[0].trim();
             priceObj.buy = result[1].trim();
             priceObj.sell = result[2].trim();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         } 
     });
 
-    updateTime = $('thead').text();
-    var time = updateTime.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    updateTime = time;
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = $('thead').text();
+    var time = instance.updateTime.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.updateTime = time;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function esunbkPattern($){
+function esunbkPattern($,instance){
     $('table tr').each(function (index) {
         if (index >= 2) {
             
@@ -154,16 +155,16 @@ function esunbkPattern($){
             priceObj.bksell = result[2].trim();
             priceObj.cashbuy = (result[4] != undefined)? result[4].trim() : "-";
             priceObj.cashsell = (result[5] != undefined)? result[5].trim() : "-";
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }            
     });
 
-    updateTime = $('#LbQuoteTime').text();
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = $('#LbQuoteTime').text();
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function taishinbkPattern($){
+function taishinbkPattern($,instance){
     $('.table01 tr').each(function (index) {
         if (index >= 1) {
             
@@ -174,16 +175,16 @@ function taishinbkPattern($){
             priceObj.bksell = result[2].trim();
             priceObj.cashbuy =  result[3].trim();
             priceObj.cashsell = result[4].trim();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }            
     });
     var time = $('.content').eq(0).text();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function hncbbkPattern($){
+function hncbbkPattern($,instance){
     $('.formtable_infotext12gy').each(function (index) {
         if (index >= 1) {       
             var result = $(this).text().trim().split("       ");
@@ -193,17 +194,17 @@ function hncbbkPattern($){
 
             priceObj.buy = result[1].trim();
             priceObj.sell = result[2].trim();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }            
     });
     var time = $('.formtable_subject15rb').text();
     
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function tcbbkPattern($){
+function tcbbkPattern($,instance){
     var priceObj,key;
     $('#ctl00_PlaceHolderEmptyMain_PlaceHolderMain_fecurrentid_gvResult tr').each(function (index) {
     
@@ -213,7 +214,7 @@ function tcbbkPattern($){
                 key = result[0].trim()
                 priceObj.bksell = (result[4] != undefined)? result[4].trim() : "-";
                 priceObj.cashsell = (result[6] != undefined)? result[6].trim() : "-";
-                resultJson[key] = priceObj;
+                instance.resultJson[key] = priceObj;
             }else{
                 priceObj = {};
                 priceObj.bkbuy = (result[4] != undefined)? result[4].trim() : "-";
@@ -227,12 +228,12 @@ function tcbbkPattern($){
     var time = $('#ctl00_PlaceHolderEmptyMain_PlaceHolderMain_fecurrentid_lblDate').text();
     var timeDate = time.match(/(\d+)(-|\/)(\d+)(-|\/)(\d+)/g);
     var timeTime = time.match(/(\d+)(-|\:)(\d+)(-|\:)(\d+)/g)
-    updateTime = timeDate + " " + timeTime;
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = timeDate + " " + timeTime;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function ctbcbkPattern($){
+function ctbcbkPattern($,instance){
     $('#mainTable tr').each(function (index) {
         if (index >= 1) {       
             var result = $(this).text().trim().split("\r\n");
@@ -242,18 +243,18 @@ function ctbcbkPattern($){
             priceObj.bksell = result[7].trim();
             priceObj.cashbuy =  result[4].trim();
             priceObj.cashsell = result[5].trim();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
     var time = $('.answer').text();
     var timeArray = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    updateTime = timeArray[0];
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = timeArray[0];
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function feibbkPattern($){
+function feibbkPattern($,instance){
     $('.mainText tr').each(function (index) {
         if (index >= 1 && index < 14) {       
             var result = $(this).text().trim().split("\r\n").clean();
@@ -265,14 +266,14 @@ function feibbkPattern($){
             priceObj.bksell = result[2].trim();
             priceObj.cashbuy =  result[3].trim();
             priceObj.cashsell = result[4].trim();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
-    return resultJson;
+    return instance.resultJson;
 }
 
-function sinopacbkPattern($){
+function sinopacbkPattern($,instance){
     $('table table tr').each(function (index) {
         if (index >= 3) {       
             var result = $(this).text().trim().split("     ");
@@ -283,21 +284,21 @@ function sinopacbkPattern($){
             priceObj.bksell = result[2].trim();
             priceObj.cashbuy = (result[3] != undefined)? result[3].trim() : "-";
             priceObj.cashsell = (result[4] != undefined)? result[4].trim() : "-";
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
     var time = $('table').text();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function kgibkPattern($){
+function kgibkPattern($,instance){
     $('.tb_05 tr').each(function (index) {
         if (index == 0) { 
             var time = $(this).text();
-            updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+            instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
   
         }
         if (index >= 2) {       
@@ -310,15 +311,15 @@ function kgibkPattern($){
             priceObj.bksell = $(this).find('td').eq(3).text();
             priceObj.cashbuy = $(this).find('td').eq(4).text();
             priceObj.cashsell = $(this).find('td').eq(5).text();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function tcbkPattern($){
+function tcbkPattern($,instance){
     $('.table_typle3 tr').each(function (index) {         
         if (index >= 1) {       
 
@@ -330,16 +331,16 @@ function tcbkPattern($){
             priceObj.bksell = $(this).find('td').eq(5).text();
             priceObj.cashbuy = $(this).find('td').eq(2).text();
             priceObj.cashsell = $(this).find('td').eq(3).text();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
-    updateTime = $(".updateDate").text().trim();
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = $(".updateDate").text().trim();
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function entiebkPattern($){
+function entiebkPattern($,instance){
     $("table[summary='外幣匯率'] tr").each(function (index) { 
         if (index >= 1) {       
 
@@ -351,18 +352,18 @@ function entiebkPattern($){
             priceObj.bksell = $(this).find('td').eq(2).text();
             priceObj.cashbuy = $(this).find('td').eq(3).text();
             priceObj.cashsell = $(this).find('td').eq(4).text();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
    
     var time = $("table[summary='更新日期時間']").text().trim();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function scbkPattern($){
+function scbkPattern($,instance){
     $("table tr").each(function (index) {
         if (index >= 3) {       
             var priceObj = {};
@@ -371,18 +372,18 @@ function scbkPattern($){
             priceObj.bksell = $(this).find('td').eq(4).text();
             priceObj.cashbuy = $(this).find('td').eq(1).text();
             priceObj.cashsell = $(this).find('td').eq(2).text();
-            resultJson[key] = priceObj;
+            instance.resultJson[key] = priceObj;
         }   
                  
     });
    
     var time = $("body").text().trim();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function scsbbkPattern($){
+function scsbbkPattern($,instance){
     $(".tb2 tr").each(function (index) {
         if (index >= 4) {       
             var priceObj = {};
@@ -390,7 +391,7 @@ function scsbbkPattern($){
             if (key != "") {
                 priceObj.buy = $(this).find('td').eq(2).text().trim();
                 priceObj.sell = $(this).find('td').eq(3).text().trim();
-                resultJson[key] = priceObj;
+                instance.resultJson[key] = priceObj;
             }
             
         }   
@@ -400,12 +401,12 @@ function scsbbkPattern($){
     var time = $(".txt07").text().trim();
     var timeDate = time.match(/(\d+)*( 年 )(\d+)*( 月 )(\d+)*( 日)/g);
     var timeTime = time.match(/(\d+)(-|\:)(\d+)(-|\:)(\d+)/g);
-    updateTime = timeDate[0] + " " + timeTime[0];
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = timeDate[0] + " " + timeTime[0];
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function dbsbkPattern($){
+function dbsbkPattern($,instance){
     $(".table-bordered tr").each(function (index) {
         if (index >= 2) {       
             var priceObj = {};
@@ -415,7 +416,7 @@ function dbsbkPattern($){
                 priceObj.bksell = $(this).find('td').eq(2).text();
                 priceObj.cashbuy = $(this).find('td').eq(5).text();
                 priceObj.cashsell = $(this).find('td').eq(4).text();
-                resultJson[key] = priceObj;
+                instance.resultJson[key] = priceObj;
             }
             
         }   
@@ -423,12 +424,12 @@ function dbsbkPattern($){
     });
    
     var time = $(".rates-date-datetime").text().trim();
-    updateTime = time;
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function netbkPattern($){
+function netbkPattern($,instance){
     $(".TitleForRate").siblings().each(function (index) {       
             var priceObj = {};
             var key = $(this).find('td').eq(0).text().trim();
@@ -437,7 +438,7 @@ function netbkPattern($){
                 priceObj.bksell = $(this).find('td').eq(2).text();
                 priceObj.cashbuy = $(this).find('td').eq(3).text();
                 priceObj.cashsell = $(this).find('td').eq(4).text();
-                resultJson[key] = priceObj;
+                instance.resultJson[key] = priceObj;
             }         
     });
     var time = $("b").text().trim();
@@ -446,15 +447,15 @@ function netbkPattern($){
     var timePM = time.match(/(下午)/g);
   
     if (timePM != undefined) {
-        updateTime = timeDate + " PM " + timeTime;
+        instance.updateTime = timeDate + " PM " + timeTime;
     }else{
-        updateTime = timeDate + " AM " + timeTime;
+        instance.updateTime = timeDate + " AM " + timeTime;
     }
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function hsbcbkPattern($){
+function hsbcbkPattern($,instance){
     $(".hsbcTableStyleForRates02 tr").each(function (index) {
         if (index > 2 && index < 16) {
             var priceObj = {};
@@ -464,18 +465,18 @@ function hsbcbkPattern($){
                 priceObj.bksell = $(this).find('td').eq(2).text();
                 priceObj.cashbuy = $(this).find('td').eq(3).text();
                 priceObj.cashsell = $(this).find('td').eq(4).text();
-                resultJson[key] = priceObj;
+                instance.resultJson[key] = priceObj;
             } 
         }
                     
     });
     var time = $(".ForTime01").text().trim();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(-|\/)(\d+)/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(-|\/)(\d+)/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 
-function firstbkPattern($){
+function firstbkPattern($,instance){
     var priceObj,key;
     $("#table1 tr").each(function (index) {
         if (index > 0) {                              
@@ -493,15 +494,14 @@ function firstbkPattern($){
                 priceObj.bkbuy = $(this).find('td').eq(2).text().trim();
                 priceObj.bksell = $(this).find('td').eq(3).text().trim();
             }                    
-            resultJson[key] = priceObj;
-            
+            instance.resultJson[key] = priceObj;
         }
                     
     });
     var time = $(".locator2").text().trim();
-    updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
-    resultJson['time'] = updateTime;
-    return resultJson;
+    instance.updateTime = time.match(/(\d+)(-|\/)(\d+)(?:-|\/)(?:(\d+)\s+(\d+):(\d+)(?::(\d+))?(?:\.(\d+))?)?/g);
+    instance.resultJson['time'] = instance.updateTime;
+    return instance.resultJson;
 }
 //Common
 //Array Clean
@@ -522,8 +522,13 @@ Pattern.prototype.init = function init (type,data) {
     if (functionPattern[type] == undefined) {
         throw new Error("type is undefined");
     }
+
+    this.resultJson = [];
+    this.tmpValue = {};
+    this.tmpKey = "";
+    this.updateTime = "";
     var func = functionPattern[type];
-    self.json = func(data);
+    self.json = func(data,this);
 };
 
 Pattern.prototype.exportJson = function _exportJson(){
