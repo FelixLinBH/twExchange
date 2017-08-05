@@ -24,7 +24,11 @@ var bank = [
 "firstbk"];
 
 var redis = require("redis");
-var client = redis.createClient({
+var CronJob = require('cron').CronJob;
+var t = require('bluebird');
+t.promisifyAll(redis.RedisClient.prototype);
+
+var writeClient = redis.createClient({
     retry_strategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
             // End reconnecting on a specific error and flush all commands with
@@ -45,12 +49,73 @@ var client = redis.createClient({
     }
 });
 
-var CronJob = require('cron').CronJob;
+var readClient = redis.createClient({
+    retry_strategy: function (options) {
+        if (options.error && options.error.code === 'ECONNREFUSED') {
+            // End reconnecting on a specific error and flush all commands with
+            // a individual error
+            return new Error('The server refused the connection');
+        }
+        if (options.total_retry_time > 1000 * 60 * 60) {
+            // End reconnecting after a specific timeout and flush all commands
+            // with a individual error
+            return new Error('Retry time exhausted');
+        }
+        if (options.attempt > 10) {
+            // End reconnecting with built in error
+            return undefined;
+        }
+        // reconnect after
+        return Math.min(options.attempt * 100, 3000);
+    }
+});
+
+
+// broadcastJob
+var server = require('http').createServer();
+var io = require('socket.io')(server);
+io.on('connection', function(client){
+  client.on('event', function(data){});
+  client.on('disconnect', function(){});
+});
+
+server.listen(3000);
+
+try {
+	var broadcastJob = new CronJob({
+	  cronTime: '* * * * * *',
+	  onTick: function() {
+	    
+	     // * Runs every weekday (Monday through Friday)
+	     // * at 11:30:00 AM. It does not run on Saturday
+	     // * or Sunday.
+	     
+	     broadcastRequest();
+	    
+	     console.log('broadcastJob ticked');
+	  },
+	  onComplete: function(){
+	  	console.log("broadcastJob complete");
+	  },
+	  start: false,
+	  timeZone: 'Asia/Taipei'
+	})
+} catch(ex) {
+	console.log("broadcastJob pattern not valid");
+}
+
+broadcastJob.start(); // job 1 started
+// broadcastJob
+
+
+
+
+
 
 
 try {
 	var dataJob = new CronJob({
-	  cronTime: '* * * * * *',
+	  cronTime: '* * * * * */2',
 	  onTick: function() {
 	    /*
 	     * Runs every weekday (Monday through Friday)
@@ -58,11 +123,10 @@ try {
 	     * or Sunday.
 	     */
 	     getCurrentChangeAndWriteRedis();
-	     //console.log('job 1 ticked');
+	     console.log('job dataJob ticked');
 	  },
 	  onComplete: function(){
 	  	console.log("cron complete");
-	  	client.quit();
 	  },
 	  start: false,
 	  timeZone: 'Asia/Taipei'
@@ -71,8 +135,50 @@ try {
 	console.log("cron pattern not valid");
 }
 
+// dataJob.start(); // job 1 started
 
-dataJob.start(); // job 1 started
+var Compress = require('lz-string');
+
+// getCurrentChangeAndWriteRedis();
+function getCurrentChangeAndWriteRedis(){
+	bank.forEach(function(data,index){
+		currentEx.getCurrentExChange(data,function(kbank,json){
+			var jsonObj = JSON.stringify(json);
+			var compressString = Compress.compressToUTF16(jsonObj);
+			// console.log("source length"+jsonObj.length+" compress string"+compressString.length);
+			writeClient.mset(kbank, compressString );
+		})
+	})
+}
+
+
+function broadcastRequest(){
+	var allData = {};
+	var current = t.resolve();
+	t.map(bank,function (item) {
+		current = current.then(function () {
+	        return readClient.getAsync(item).then(function(res) {
+			    // var source = Compress.decompressFromUTF16(res);
+				// allData[item] = source;
+				// 前端解
+				allData[item] = res;
+			});
+	    });
+	    return current;
+	}).then(function () {
+		console.log("broadcastRequest send!");
+		// console.log(allData);
+		 io.sockets.emit('message',  allData );
+	}).catch(function (e) {
+		console.log("broadcastRequest error!");
+	    console.log(e);
+	    readClient.quit();
+	});
+}
+
+
+
+
 
 // if you'd like to select database 3, instead of 0 (default), call
 // client.select(3, function() { /* ... */ });
@@ -81,22 +187,8 @@ dataJob.start(); // job 1 started
 //     console.log("Error " + err);
 // });
 
-// for (var itemBank in bank){
-// 	client.hgetall(itemBank, function (err, obj) {
-//     	console.log(obj);
-// 	});
-// }
 
-// client.set("string key", "string val", redis.print);
-// client.hset("hash key", "hashtest 1", "some value", redis.print);
-// client.hset(["hash key", "hashtest 2", "some other value"], redis.print);
-// client.hkeys("hash key", function (err, replies) {
-//     console.log(replies.length + " replies:");
-//     replies.forEach(function (reply, i) {
-//         console.log("    " + i + ": " + reply);
-//     });
-//     client.quit();
-// });
+
 
 // const { Pool, Client } = require('pg')
 
@@ -127,17 +219,5 @@ dataJob.start(); // job 1 started
 //   client.end()
 // })
 
-
-function getCurrentChangeAndWriteRedis(){
-	bank.forEach(function(data,index){
-		currentEx.getCurrentExChange(data,function(kbank,json){
-			var jsonObj = JSON.stringify(json);
-			for (var item in json){
-				json[item] = JSON.stringify(json[item]);
-			}
-			client.hmset(kbank, json);
-		})
-	})
-}
 
 
