@@ -26,8 +26,23 @@ var bank = [
 var redis = require("redis");
 var CronJob = require('cron').CronJob;
 var Compress = require('lz-string');
+var parser = require('cron-parser');
 var t = require('bluebird');
 t.promisifyAll(redis.RedisClient.prototype);
+
+
+try {
+  var currentInterval = parser.parseExpression('* * * * * *');
+  var endInterval = parser.parseExpression('00 00 14 * * *');
+
+  console.log('Date: ', currentInterval.next()); // Sat Dec 29 2012 00:42:00 GMT+0200 (EET)
+  console.log('Date: ', endInterval.next()); // Sat Dec 29 2012 00:44:00 GMT+0200 (EET)
+
+  // console.log('Date: ', interval.prev().toString()); // Sat Dec 29 2012 00:42:00 GMT+0200 (EET)
+  // console.log('Date: ', interval.prev().toString()); // Sat Dec 29 2012 00:40:00 GMT+0200 (EET)
+} catch (err) {
+  console.log('Error: ' + err.message);
+}
 
 var writeClient = redis.createClient({
     retry_strategy: function (options) {
@@ -82,86 +97,93 @@ io.on('connection', function(client){
 
 server.listen(3000);
 
-try {
-	var broadcastJob = new CronJob({
-	  cronTime: '00 00 09 * * 1-5',
-	  onTick: function() {
-	    
-	     // * Runs every weekday (Monday through Friday)
-	     // * at 11:30:00 AM. It does not run on Saturday
-	     // * or Sunday.
-	     
-	     broadcastRequest();
-	    
-	     console.log('broadcastJob ticked');
-	  },
-	  onComplete: function(){
-	  	console.log("broadcastJob complete");
-	  },
-	  start: false,
-	  timeZone: 'Asia/Taipei'
-	})
-} catch(ex) {
-	console.log("broadcastJob pattern not valid");
-}
 
-broadcastJob.start(); // job 1 started
+// 變動時前端 socket 資料
+var broadcastJob = new CronJob({
+  cronTime: '* * * * * 1-5',
+  onTick: function() {
+     broadcastRequest();
+     console.log('broadcastJob ticked');
+  },
+  onComplete: function(){
+  	console.log("broadcastJob complete");
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+})
+// broadcastJob.start(); // job 1 started
+
+//變動時取得新資料
+var dataJob = new CronJob({
+  cronTime: '* * * * * 1-5',
+  onTick: function() {
+     getCurrentChangeAndWriteRedis();
+     console.log('dataJob ticked');
+  },
+  onComplete: function(){
+  	console.log("dataJob complete");
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+})
+// dataJob.start(); // job 1 started
+
+//不變動期間資料
+var notOpenBroadcastJob = new CronJob({
+  cronTime: '* * * * * *',
+  onTick: function() {
+     // notOpenbroadcastRequest();
+     console.log('notOpenBroadcastJob ticked');
+  },
+  onComplete: function(){
+  	console.log("notOpenBroadcastJob complete");
+  },
+  start: false,
+  timeZone: 'Asia/Taipei'
+})
+// notOpenBroadcastJob.start(); // job 1 started
 // broadcastJob
 
 
-try {
-	var dataJob = new CronJob({
-	  cronTime: '* * * * * 1-5',
-	  onTick: function() {
-	    /*
-	     * Runs every weekday (Monday through Friday)
-	     * at 11:30:00 AM. It does not run on Saturday
-	     * or Sunday.
-	     */
-	     getCurrentChangeAndWriteRedis();
-	     console.log('job dataJob ticked');
-	  },
-	  onComplete: function(){
-	  	console.log("cron complete");
-	  },
-	  start: false,
-	  timeZone: 'Asia/Taipei'
-	})
-} catch(ex) {
-	console.log("cron pattern not valid");
-}
+//Time controller
+var startTimerController = new CronJob({
+	cronTime: '00 00 09 * * 1-5',
+	onTick: function(){
+		if (notOpenBroadcastJob.running) {
+			notOpenBroadcastJob.stop();
+		}
+		
+		broadcastJob.start();
+		dataJob.start(); 
+	},onComplete: function(){
+		console.log("startTimerController complete");
+	},
+	start: true,
+ 	timeZone: 'Asia/Taipei'
+})
 
-//須自己控制時間啟動
-dataJob.start(); // job 1 started
-
-
-try {
-	var notOpenBroadcastJob = new CronJob({
-	  cronTime: '* * * * * 6-7',
-	  onTick: function() {
-	    
-	     // * Runs every weekday (Monday through Friday)
-	     // * at 11:30:00 AM. It does not run on Saturday
-	     // * or Sunday.
-	     
-	     notOpenbroadcastRequest();
-	    
-	     console.log('notOpenbroadcastRequest ticked');
-	  },
-	  onComplete: function(){
-	  	console.log("notOpenbroadcastRequest complete");
-	  },
-	  start: false,
-	  timeZone: 'Asia/Taipei'
-	})
-} catch(ex) {
-	console.log("broadcastJob pattern not valid");
-}
-
-notOpenBroadcastJob.start(); // job 1 started
-// broadcastJob
+var endTimerController = new CronJob({
+	cronTime: '00 00 16 * * 1-5',
+	onTick: function(){
+		if (broadcastJob.running) {
+			broadcastJob.stop();
+		}
+		if (dataJob.running) {
+			dataJob.stop(); 
+		}
+		if (dataJob.running == undefined) {
+			notOpenBroadcastJob.start();
+		}
+		
+	},onComplete: function(){
+		console.log("endTimerController complete");
+	},
+	start: true,
+ 	timeZone: 'Asia/Taipei'
+})
 
 
+//Function
 function getCurrentChangeAndWriteRedis(){
 	bank.forEach(function(data,index){
 		currentEx.getCurrentExChange(data,function(kbank,json){
@@ -171,31 +193,6 @@ function getCurrentChangeAndWriteRedis(){
 		})
 	})
 }
-
-
-function notOpenbroadcastRequest(){
-	var allData = {};
-	var current = t.resolve();
-	t.map(bank,function (item) {
-		current = current.then(function () {
-	        return readClient.getAsync(item).then(function(res) {
-			    // var source = Compress.decompressFromUTF16(res);
-				// allData[item] = source;
-				// 前端解
-				allData[item] = res;
-			});
-	    });
-	    return current;
-	}).then(function () {
-		 io.sockets.emit('message',  allData );
-		 io.sockets.emit('event',  'end' );
-	}).catch(function (e) {
-		console.log("broadcastRequest error!");
-	    console.log(e);
-	    readClient.quit();
-	});
-}
-
 
 function broadcastRequest(){
 	var allData = {};
@@ -211,13 +208,41 @@ function broadcastRequest(){
 	    });
 	    return current;
 	}).then(function () {
-		 io.sockets.emit('message',  allData );
+		io.sockets.emit('message',  allData );
+	}).then(function(){
+		var currentInterval = parser.parseExpression('* * * * * *');
+		var endInterval = parser.parseExpression('00 00 14 * * *');
+
+		io.sockets.emit('event',  'end' );
+
 	}).catch(function (e) {
 		console.log("broadcastRequest error!");
 	    console.log(e);
 	    readClient.quit();
 	});
 }
+
+// function broadcastRequest(){
+// 	var allData = {};
+// 	var current = t.resolve();
+// 	t.map(bank,function (item) {
+// 		current = current.then(function () {
+// 	        return readClient.getAsync(item).then(function(res) {
+// 			    // var source = Compress.decompressFromUTF16(res);
+// 				// allData[item] = source;
+// 				// 前端解
+// 				allData[item] = res;
+// 			});
+// 	    });
+// 	    return current;
+// 	}).then(function () {
+// 		 io.sockets.emit('message',  allData );
+// 	}).catch(function (e) {
+// 		console.log("broadcastRequest error!");
+// 	    console.log(e);
+// 	    readClient.quit();
+// 	});
+// }
 
 
 
