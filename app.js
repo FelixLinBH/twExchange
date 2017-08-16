@@ -31,7 +31,6 @@ t.promisifyAll(redis.RedisClient.prototype);
 
 
 
-
 var writeClient = redis.createClient({
     retry_strategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
@@ -76,14 +75,29 @@ var readClient = redis.createClient({
 
 
 // broadcastJob
-var server = require('http').createServer();
-var io = require('socket.io')(server);
+// var server = require('http').createServer();
+
+var app = require('express')();
+var http = require('http').Server(app);
+
+app.get('/', function(req, res){
+  res.send('<h1>Hello world</h1>');
+});
+
+app.post('/subscription', function(req, res){
+  res.send('<h1>subscription</h1>');
+});
+
+var io = require('socket.io')(http);
 io.on('connection', function(client){
   client.on('event', function(data){});
   client.on('disconnect', function(){});
 });
 
-server.listen(3000);
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
+// server.listen(3000);
 
 
 // 變動時前端 socket 資料
@@ -160,27 +174,6 @@ function isOpenTime(){
 	}
 	return true;
 }
-// function broadcastRequest(){
-// 	var allData = {};
-// 	var current = t.resolve();
-// 	t.map(bank,function (item) {
-// 		current = current.then(function () {
-// 	        return readClient.getAsync(item).then(function(res) {
-// 			    // var source = Compress.decompressFromUTF16(res);
-// 				// allData[item] = source;
-// 				// 前端解
-// 				allData[item] = res;
-// 			});
-// 	    });
-// 	    return current;
-// 	}).then(function () {
-// 		 io.sockets.emit('message',  allData );
-// 	}).catch(function (e) {
-// 		console.log("broadcastRequest error!");
-// 	    console.log(e);
-// 	    readClient.quit();
-// 	});
-// }
 
 
 

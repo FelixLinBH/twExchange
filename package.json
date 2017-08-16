@@ -24,6 +24,7 @@
     "bluebird": "^3.5.0",
     "crawler": "1.0.3",
     "cron": "^1.2.1",
+    "express": "^4.15.2",
     "iconv-lite": "0.4.18",
     "lz-string": "^1.4.4",
     "moment": "2.18.1",
