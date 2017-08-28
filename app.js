@@ -16,7 +16,6 @@ var bank = [
 "kgibk",
 "tcbk",
 "entiebk",
-"scbk",
 "scsbbk",
 "dbsbk",
 "netbk",
