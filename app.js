@@ -74,16 +74,17 @@ var readClient = redis.createClient({
 
 
 // broadcastJob
-// var server = require('http').createServer();
+var express = require('express');
+var app = express();
 
-var app = require('express')();
 var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var path = require("path");
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(express.static(__dirname+'/public'));
 
 app.get('/', function(req, res){
-  res.sendFile(path.join(__dirname+'/front/index.html'));
+  res.sendFile(path.join(__dirname+'/public/index.html'));
 });
 
 app.post('/subscription', function(req, res){
