@@ -16,7 +16,7 @@ var bank = [
 "kgibk",
 "tcbk",
 "entiebk",
-"scsbbk",
+// "scsbbk",
 "dbsbk",
 "netbk",
 "hsbcbk",
@@ -78,11 +78,12 @@ var readClient = redis.createClient({
 
 var app = require('express')();
 var http = require('http').Server(app);
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+var path = require("path");
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
 app.get('/', function(req, res){
-  res.send('<h1>Hello world</h1>');
+  res.sendFile(path.join(__dirname+'/front/index.html'));
 });
 
 app.post('/subscription', function(req, res){
