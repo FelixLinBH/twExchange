@@ -96,10 +96,14 @@ console.log('body=>' + req.body.email);
 });
 
 var io = require('socket.io')(http);
-io.on('connection', function(client){
-  client.on('event', function(data){});
-  client.on('disconnect', function(){});
-});
+// io.on('connection', function(client){
+// 	console.log("connection");
+//   client.on('event', function(data){});
+//   client.on('disconnect', function(){
+//   		console.log("disconnect");
+
+//   });
+// });
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
