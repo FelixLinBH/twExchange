@@ -81,11 +81,11 @@ var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var path = require("path");
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(express.static(__dirname+'/public'));
+//app.use(express.static(__dirname+'/public'));
 
-app.get('/', function(req, res){
-  res.sendFile(path.join(__dirname+'/public/index.html'));
-});
+//app.get('/', function(req, res){
+//  res.sendFile(path.join(__dirname+'/public/index.html'));
+//});
 
 app.post('/subscription', function(req, res){
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
