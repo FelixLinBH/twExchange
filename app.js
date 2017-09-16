@@ -121,6 +121,8 @@ var broadcastJob = new CronJob({
   },
   onComplete: function(){
   	console.log("broadcastJob complete");
+  	//need restart job
+  	broadcastJob.start();
   },
   start: true,
   timeZone: 'Asia/Taipei'
