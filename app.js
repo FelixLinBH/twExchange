@@ -28,8 +28,6 @@ var Compress = require('lz-string');
 var t = require('bluebird');
 t.promisifyAll(redis.RedisClient.prototype);
 
-
-
 var writeClient = redis.createClient({
     retry_strategy: function (options) {
         if (options.error && options.error.code === 'ECONNREFUSED') {
@@ -76,7 +74,6 @@ var readClient = redis.createClient({
 // broadcastJob
 var express = require('express');
 var app = express();
-
 var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var path = require("path");
@@ -87,28 +84,19 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 //  res.sendFile(path.join(__dirname+'/public/index.html'));
 //});
 
-app.post('/subscription', function(req, res){
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	console.log('ip=>'+ ip );
-console.log('body=>' + req.body.email);
-  res.send('<h1>subscription</h1>');
+// app.post('/subscription', function(req, res){
+// 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+// 	console.log('ip=>'+ ip );
+// 	console.log('body=>' + req.body.email);
+//   res.send('<h1>subscription</h1>');
 
-});
+// });
 
 var io = require('socket.io')(http);
-// io.on('connection', function(client){
-// 	console.log("connection");
-//   client.on('event', function(data){});
-//   client.on('disconnect', function(){
-//   		console.log("disconnect");
-
-//   });
-// });
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
-// server.listen(3000);
 
 
 // 變動時前端 socket 資料
@@ -174,8 +162,6 @@ function isOpenTime(){
 	now = new Date();
 	days = now.getDay();
 	hours = now.getHours();
-	// minutes = now.getMinutes();
-	// seconds = now.getSeconds();
 	if (days == 0 || days == 6) {
 		return false;
 	}
@@ -190,46 +176,6 @@ function isOpenTime(){
 
 
 
-
-
-// if you'd like to select database 3, instead of 0 (default), call
-// client.select(3, function() { /* ... */ });
-
-// client.on("error", function (err) {
-//     console.log("Error " + err);
-// });
-
-
-
-
-// const { Pool, Client } = require('pg')
-
-// const pool = new Pool({
-//   user: 'postgres',
-//   host: '127.0.0.1',
-//   database: 'exrate',
-//   password: 'tys55661',
-//   port: 5432,
-// })
-
-// pool.query('SELECT NOW()', (err, res) => {
-//   console.log(err, res)
-//   pool.end()
-// })
-
-// const client = new Client({
-//   user: 'postgres',
-//   host: '127.0.0.1',
-//   database: 'exrate',
-//   password: 'tys55661',
-//   port: 5432,
-// })
-// client.connect()
-
-// client.query('SELECT NOW()', (err, res) => {
-//   console.log(err, res)
-//   client.end()
-// })
 
 
 
