@@ -29,10 +29,19 @@
     "iconv-lite": "0.4.18",
     "lz-string": "^1.4.4",
     "moment": "2.18.1",
-    "pg": "^7.0.2",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
     "redis": "^2.7.1",
+    "sequelize": "^4.13.0",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3"
   },
-  "homepage": "https://github.com/FelixLinBH/twExchange#readme"
+  "homepage": "https://github.com/FelixLinBH/twExchange#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^3.0.0"
+  }
 }
