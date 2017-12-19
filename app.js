@@ -93,7 +93,7 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 // });
 
 var io = require('socket.io')(http);
-io.set('transports', ['websocket']);
+io.set('transports', ['websocket','polling']);
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
